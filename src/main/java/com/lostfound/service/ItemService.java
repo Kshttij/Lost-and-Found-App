@@ -75,4 +75,16 @@ public class ItemService {
     return itemRepository.save(item);
 }
 
+public List<Item> getItemsByCategory(String category) {
+    return itemRepository.findByCategory(category);
+}
+
+public List<Item> getItemsByTypeAndCategory(String type, String category) {
+    return itemRepository.findByTypeAndCategory(type, category);
+}
+
+public List<Item> getItemsByTypeStatusAndCategory(String type, String status, String category) {
+    return itemRepository.findByTypeAndStatusAndCategory(type, status, category);
+}
+
 }

@@ -29,25 +29,28 @@ public class Item {
     @JoinColumn(name = "created_by")
     private User createdBy;
 
+    private String category; // e.g., Electronics, Documents, Keys, Wallets
+
     // ------------------------------------------------------
     // ✅ Default constructor (required by JPA)
     public Item() {}
 
     // ✅ Parameterized constructor
     public Item(String title, String description, String location, String type,
-                LocalDateTime dateOccurred, String contactInfo, String status,
-                String imageUrl, User createdBy) {
-        this.title = title;
-        this.description = description;
-        this.location = location;
-        this.type = type;
-        this.dateOccurred = dateOccurred;
-        this.contactInfo = contactInfo;
-        this.status = status;
-        this.imageUrl = imageUrl;
-        this.createdBy = createdBy;
-        this.createdAt = LocalDateTime.now();
-    }
+            LocalDateTime dateOccurred, String contactInfo, String status,
+            String imageUrl, String category, User createdBy) {
+    this.title = title;
+    this.description = description;
+    this.location = location;
+    this.type = type;
+    this.dateOccurred = dateOccurred;
+    this.contactInfo = contactInfo;
+    this.status = status;
+    this.imageUrl = imageUrl;
+    this.category = category;
+    this.createdBy = createdBy;
+    this.createdAt = LocalDateTime.now();
+}
 
     // ------------------------------------------------------
     // ✅ Getters and setters
@@ -83,4 +86,7 @@ public class Item {
 
     public User getCreatedBy() { return createdBy; }
     public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
+
+    public String getCategory() { return category; }
+public void setCategory(String category) { this.category = category; }
 }

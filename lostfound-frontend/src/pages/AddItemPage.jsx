@@ -13,6 +13,7 @@ function AddItemPage() {
     status: "OPEN", // default
   });
 
+  const [category, setCategory] = useState(""); // ✅ new state for category
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -40,6 +41,11 @@ function AddItemPage() {
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!category) {
+      alert("Please select a category.");
+      return;
+    }
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -71,6 +77,7 @@ function AddItemPage() {
       const payload = {
         ...formData,
         imageUrl: imageUrl || "",
+        category, // include category
       };
 
       await axios.post("http://localhost:8080/api/items", payload, {
@@ -130,6 +137,22 @@ function AddItemPage() {
           <option value="LOST">Lost</option>
           <option value="FOUND">Found</option>
         </select>
+
+        {/* ✅ Category dropdown */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+        >
+          <option value="">Select Category</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Documents">Documents</option>
+          <option value="Keys">Keys</option>
+          <option value="Wallets">Wallets</option>
+          <option value="Other">Other</option>
+        </select>
+
         <input
           type="datetime-local"
           name="dateOccurred"

@@ -124,7 +124,5 @@ public ResponseEntity<Item> markItemAsResolved(@PathVariable Long id, Authentica
     User loggedInUser = (User) authentication.getPrincipal();
     Item updatedItem = itemService.markItemAsResolved(id, loggedInUser.getId());
     return ResponseEntity.ok(updatedItem);
-}
-
-
+} 
 }
