@@ -11,45 +11,54 @@ function Navbar({ setToken }) {
   };
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 20px",
-        backgroundColor: "#4CAF50",
-        color: "white",
-        boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
-      }}
-    >
-      <div style={{ fontWeight: "bold", fontSize: "20px" }}>Lost & Found</div>
+    <nav className="bg-green-600 shadow-md text-white">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        {/* Brand Name */}
+        <div className="text-2xl font-bold tracking-wide">
+          Lost & Found
+        </div>
 
-      <div style={{ display: "flex", gap: "15px" }}>
-        <Link to="/lost-items" style={{ color: "white", textDecoration: "none" }}>
-          🆘 Lost Items
-        </Link>
-        <Link to="/found-items" style={{ color: "white", textDecoration: "none" }}>
-          🔍 Found Items
-        </Link>
-        <Link to="/add-item" style={{ color: "white", textDecoration: "none" }}>
-          ➕ Add Item
-        </Link>
-        <Link to="/my-items" style={{ color: "white", textDecoration: "none" }}>
-          📦 My Items
-        </Link>
+        {/* Navigation Links */}
+        <div className="hidden md:flex gap-6 items-center">
+          <Link
+            to="/lost-items"
+            className="hover:text-green-200 transition-colors duration-200"
+          >
+            🆘 Lost Items
+          </Link>
+          <Link
+            to="/found-items"
+            className="hover:text-green-200 transition-colors duration-200"
+          >
+            🔍 Found Items
+          </Link>
+          <Link
+            to="/add-item"
+            className="hover:text-green-200 transition-colors duration-200"
+          >
+            ➕ Add Item
+          </Link>
+          <Link
+            to="/my-items"
+            className="hover:text-green-200 transition-colors duration-200"
+          >
+            📦 My Items
+          </Link>
 
-        <button
-          onClick={handleLogout}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "white",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          🚪 Logout
-        </button>
+          <button
+            onClick={handleLogout}
+            className="bg-white text-green-700 font-semibold px-3 py-1 rounded-md hover:bg-green-100 transition duration-200"
+          >
+            🚪 Logout
+          </button>
+        </div>
+
+        {/* Mobile Menu Placeholder (optional for future) */}
+        <div className="md:hidden">
+          <button className="focus:outline-none text-white">
+            ☰
+          </button>
+        </div>
       </div>
     </nav>
   );

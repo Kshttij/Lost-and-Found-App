@@ -3,86 +3,61 @@ import React from "react";
 function ItemCard({ item, onClaim }) {
   return (
     <div
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "10px",
-        padding: "15px",
-        textAlign: "center",
-        boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
-      }}
+      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col"
     >
       {item.imageUrl ? (
         <img
           src={item.imageUrl}
           alt={item.title}
-          style={{
-            width: "100%",
-            height: "200px",
-            objectFit: "cover",
-            borderRadius: "10px",
-          }}
+          className="w-full h-48 object-cover"
         />
       ) : (
-        <div
-          style={{
-            width: "100%",
-            height: "200px",
-            backgroundColor: "#f0f0f0",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: "10px",
-            color: "#999",
-            fontStyle: "italic",
-          }}
-        >
+        <div className="w-full h-48 bg-gray-100 flex justify-center items-center text-gray-400 italic">
           No Image
         </div>
       )}
 
-      <h3 style={{ marginTop: "10px" }}>{item.title}</h3>
-      <p><strong>Description:</strong> {item.description}</p>
-      <p><strong>Location:</strong> {item.location}</p>
-      <p><strong>Type:</strong> {item.type}</p>
-      <p><strong>Date:</strong> {new Date(item.dateOccurred).toLocaleString()}</p>
-      <p><strong>Contact:</strong> {item.contactInfo}</p>
-      <p><strong>Status:</strong> {item.status}</p>
+      <div className="p-4 flex flex-col flex-grow">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h3>
 
-      {/* Claim button for FOUND items only if OPEN */}
-      {item.type === "FOUND" && item.status === "OPEN" && onClaim && (
-        <button
-          onClick={() => onClaim(item)}
-          style={{
-            marginTop: "10px",
-            padding: "8px 12px",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Description:</span> {item.description}
+        </p>
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Location:</span> {item.location}
+        </p>
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Type:</span> {item.type}
+        </p>
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Date:</span>{" "}
+          {new Date(item.dateOccurred).toLocaleString()}
+        </p>
+        <p className="text-sm text-gray-600">
+          <span className="font-medium">Contact:</span> {item.contactInfo}
+        </p>
+        <p
+          className={`text-sm font-medium mt-1 ${
+            item.status === "RESOLVED" ? "text-green-600" : "text-yellow-600"
+          }`}
         >
-          Claim
-        </button>
-      )}
+          Status: {item.status}
+        </p>
 
-      {/* Contact Owner button for LOST items only if OPEN */}
-      {item.type === "LOST" && item.status === "OPEN" && onClaim && (
-        <button
-          onClick={() => onClaim(item)}
-          style={{
-            marginTop: "10px",
-            padding: "8px 12px",
-            backgroundColor: "#2196F3",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Contact Owner
-        </button>
-      )}
+        {/* Action Button */}
+        {item.status === "OPEN" && onClaim && (
+          <button
+            onClick={() => onClaim(item)}
+            className={`mt-auto w-full py-2 rounded-lg text-white font-medium transition-colors duration-200 ${
+              item.type === "FOUND"
+                ? "bg-green-500 hover:bg-green-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            {item.type === "FOUND" ? "Claim" : "Contact Owner"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

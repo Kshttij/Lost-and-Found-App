@@ -75,204 +75,142 @@ function MyItemsPage() {
 
   if (loading)
     return (
-      <p style={{ textAlign: "center", marginTop: "50px" }}>
+      <p className="text-center mt-20 text-gray-600 text-lg">
         Loading your items...
       </p>
     );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>My Items</h2>
+    <div className="p-6 max-w-7xl mx-auto">
+      <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800">
+        My Items
+      </h2>
 
       {items.length === 0 ? (
-        <p style={{ textAlign: "center" }}>You haven’t added any items yet.</p>
+        <p className="text-center text-gray-500 text-lg">
+          You haven’t added any items yet.
+        </p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "20px",
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item) => (
             <div
               key={item.id}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "10px",
-                padding: "15px",
-                textAlign: "center",
-                boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
-              }}
+              className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-4 flex flex-col"
             >
               {item.imageUrl ? (
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  style={{
-                    width: "100%",
-                    height: "200px",
-                    objectFit: "cover",
-                    borderRadius: "10px",
-                  }}
+                  className="w-full h-48 object-cover rounded-xl mb-3"
                 />
               ) : (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "200px",
-                    backgroundColor: "#f0f0f0",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "10px",
-                    color: "#999",
-                    fontStyle: "italic",
-                  }}
-                >
+                <div className="w-full h-48 bg-gray-100 flex justify-center items-center rounded-xl text-gray-400 italic">
                   No Image
                 </div>
               )}
 
-              <h3 style={{ marginTop: "10px" }}>{item.title}</h3>
-              <p><strong>Description:</strong> {item.description}</p>
-              <p><strong>Location:</strong> {item.location}</p>
-              <p><strong>Type:</strong> {item.type}</p>
-              <p>
-                <strong>Status:</strong>{" "}
-                {item.status === "RESOLVED" ? "✅ Resolved" : "❌ Open"}
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {item.title}
+              </h3>
+              <p className="text-gray-600 mb-1">
+                <strong>Description:</strong> {item.description}
               </p>
-              <p>
+              <p className="text-gray-600 mb-1">
+                <strong>Location:</strong> {item.location}
+              </p>
+              <p className="text-gray-600 mb-1">
+                <strong>Type:</strong> {item.type}
+              </p>
+              <p className="text-gray-600 mb-1">
+                <strong>Status:</strong>{" "}
+                {item.status === "RESOLVED" ? (
+                  <span className="text-green-600 font-medium">✅ Resolved</span>
+                ) : (
+                  <span className="text-red-600 font-medium">❌ Open</span>
+                )}
+              </p>
+              <p className="text-gray-600 mb-4">
                 <strong>Date:</strong>{" "}
                 {new Date(item.dateOccurred).toLocaleString()}
               </p>
 
-              <button
-                onClick={() => handleDelete(item.id)}
-                style={{
-                  backgroundColor: "#e74c3c",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 12px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  marginTop: "10px",
-                }}
-              >
-                🗑️ Delete
-              </button>
+              <div className="mt-auto flex justify-center space-x-3">
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition"
+                >
+                  🗑️ Delete
+                </button>
 
-              <button
-                onClick={() => setEditingItem(item)}
-                style={{
-                  backgroundColor: "#3498db",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 12px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  marginTop: "10px",
-                  marginLeft: "10px",
-                }}
-              >
-                ✏️ Update Item
-              </button>
+                <button
+                  onClick={() => setEditingItem(item)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition"
+                >
+                  ✏️ Update
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Modal for editing item */}
       {editingItem && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "white",
-            borderRadius: "10px",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-            padding: "20px",
-            width: "350px",
-            zIndex: 1000,
-          }}
-        >
-          <h3>Edit Item</h3>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-96 p-6">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
+              Edit Item
+            </h3>
 
-          <label>Description:</label>
-          <input
-            type="text"
-            value={editingItem.description}
-            onChange={(e) =>
-              setEditingItem({ ...editingItem, description: e.target.value })
-            }
-            style={{
-              width: "100%",
-              marginBottom: "10px",
-              padding: "6px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          />
-
-          <label>Location:</label>
-          <input
-            type="text"
-            value={editingItem.location}
-            onChange={(e) =>
-              setEditingItem({ ...editingItem, location: e.target.value })
-            }
-            style={{
-              width: "100%",
-              marginBottom: "10px",
-              padding: "6px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          />
-
-          <label>
+            <label className="block text-sm font-medium mb-1">Description:</label>
             <input
-              type="checkbox"
-              checked={editingItem.status === "RESOLVED"}
+              type="text"
+              value={editingItem.description}
               onChange={(e) =>
-                setEditingItem({
-                  ...editingItem,
-                  status: e.target.checked ? "RESOLVED" : "OPEN",
-                })
+                setEditingItem({ ...editingItem, description: e.target.value })
               }
+              className="w-full mb-3 p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 outline-none"
             />
-            &nbsp; Mark as Resolved
-          </label>
 
-          <div style={{ marginTop: "15px" }}>
-            <button
-              onClick={handleUpdate}
-              style={{
-                backgroundColor: "#2ecc71",
-                color: "white",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}
-            >
-              💾 Save
-            </button>
-            <button
-              onClick={() => setEditingItem(null)}
-              style={{
-                backgroundColor: "#7f8c8d",
-                color: "white",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              ❌ Cancel
-            </button>
+            <label className="block text-sm font-medium mb-1">Location:</label>
+            <input
+              type="text"
+              value={editingItem.location}
+              onChange={(e) =>
+                setEditingItem({ ...editingItem, location: e.target.value })
+              }
+              className="w-full mb-3 p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 outline-none"
+            />
+
+            <label className="inline-flex items-center mb-4">
+              <input
+                type="checkbox"
+                checked={editingItem.status === "RESOLVED"}
+                onChange={(e) =>
+                  setEditingItem({
+                    ...editingItem,
+                    status: e.target.checked ? "RESOLVED" : "OPEN",
+                  })
+                }
+                className="mr-2 accent-green-500"
+              />
+              Mark as Resolved
+            </label>
+
+            <div className="flex justify-end space-x-3 mt-4">
+              <button
+                onClick={handleUpdate}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
+              >
+                💾 Save
+              </button>
+              <button
+                onClick={() => setEditingItem(null)}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
+              >
+                ❌ Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

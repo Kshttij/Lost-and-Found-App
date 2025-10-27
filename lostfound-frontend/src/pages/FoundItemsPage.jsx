@@ -44,17 +44,17 @@ function FoundItemsPage() {
     }
   };
 
-  // Initial fetch
+  // Initial + status-based fetch
   useEffect(() => {
     fetchItems(filterStatus);
   }, [filterStatus]);
 
-  // Handle claim
+  // Handle claim (email link)
   const handleClaim = (item) => {
     window.location.href = `mailto:${item.contactInfo}?subject=Claiming your found item: ${item.title}`;
   };
 
-  // Client-side search + category filter
+  // Client-side search + filter
   const filteredItems = items.filter(
     (item) =>
       (item.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -63,32 +63,32 @@ function FoundItemsPage() {
   );
 
   if (loading)
-    return <p style={{ textAlign: "center", marginTop: "50px" }}>Loading items...</p>;
+    return (
+      <p className="text-center mt-16 text-gray-600 text-lg font-medium">
+        Loading items...
+      </p>
+    );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Found Items</h2>
+    <div className="p-6 sm:p-10 min-h-screen bg-gray-50">
+      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+        Found Items
+      </h2>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-          flexWrap: "wrap",
-          marginBottom: "20px",
-        }}
-      >
+      {/* Filters */}
+      <div className="flex flex-wrap justify-center gap-4 mb-8">
         <input
           type="text"
           placeholder="Search by title or description"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "5px", width: "250px" }}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none w-64"
         />
 
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
           <option value="">All Statuses</option>
           <option value="OPEN">Open</option>
@@ -98,6 +98,7 @@ function FoundItemsPage() {
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
           <option value="">All Categories</option>
           <option value="Electronics">Electronics</option>
@@ -108,16 +109,13 @@ function FoundItemsPage() {
         </select>
       </div>
 
+      {/* Results */}
       {filteredItems.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No found items available.</p>
+        <p className="text-center text-gray-600 text-lg">
+          No found items available.
+        </p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "20px",
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
             <ItemCard key={item.id} item={item} onClaim={handleClaim} />
           ))}
