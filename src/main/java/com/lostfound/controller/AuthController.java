@@ -3,7 +3,6 @@ package com.lostfound.controller;
 import com.lostfound.config.JwtUtil;
 import com.lostfound.model.User;
 import com.lostfound.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +15,16 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthController(UserService userService,JwtUtil jwtUtil , PasswordEncoder passwordEncoder){
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
@@ -48,5 +49,16 @@ public class AuthController {
         response.put("id", String.valueOf(user.getId()));
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        if (userService.emailExists(user.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already registered");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userService.saveUser(user);
+        return ResponseEntity.ok("User registered successfully");
     }
 }

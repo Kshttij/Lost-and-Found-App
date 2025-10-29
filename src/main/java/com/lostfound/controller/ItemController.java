@@ -3,21 +3,24 @@ package com.lostfound.controller;
 import com.lostfound.model.Item;
 import com.lostfound.model.User;
 import com.lostfound.service.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/items")
 public class ItemController {
 
-    @Autowired
-    private ItemService itemService;
+    private final ItemService itemService;
+
+    public ItemController(ItemService itemService){
+        this.itemService = itemService;
+    }
 
     // ✅ Get all items (with optional filters)
     // Example calls:
@@ -46,9 +49,15 @@ public class ItemController {
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Item> getItemById(@PathVariable Long id) {
-        return itemService.getItemById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+
+        Item item = itemService.getItemById(id);
+
+        if(item != null){
+            return new ResponseEntity<>(item, HttpStatus.OK);
+        }
+        
+        else 
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     // ✅ Add new item
@@ -71,10 +80,9 @@ public class ItemController {
                                            @RequestBody Item updatedItem,
                                            Authentication authentication) {
 
-        Optional<Item> existingItemOpt = itemService.getItemById(id);
-        if (existingItemOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        Item existingItem = existingItemOpt.get();
+        Item existingItem = itemService.getItemById(id);
+        if (existingItem == null) return ResponseEntity.notFound().build();
+        
         User loggedInUser = (User) authentication.getPrincipal();
 
         if (!loggedInUser.getRole().equals("ADMIN") &&
@@ -94,10 +102,9 @@ public class ItemController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id,
                                            Authentication authentication) {
-        Optional<Item> existingItemOpt = itemService.getItemById(id);
-        if (existingItemOpt.isEmpty()) return ResponseEntity.notFound().build();
+        Item existingItem = itemService.getItemById(id);
+        if (existingItem == null) return ResponseEntity.notFound().build();
 
-        Item existingItem = existingItemOpt.get();
         User loggedInUser = (User) authentication.getPrincipal();
 
         if (!loggedInUser.getRole().equals("ADMIN") &&

@@ -2,7 +2,6 @@ package com.lostfound.controller;
 
 import com.lostfound.model.User;
 import com.lostfound.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,21 +14,14 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    
+    private final UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
-        if (userService.emailExists(user.getEmail())) {
-            return ResponseEntity.badRequest().body("Email already registered");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userService.saveUser(user);
-        return ResponseEntity.ok("User registered successfully");
+    public UserController(UserService userService, PasswordEncoder passwordEncoder){
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PreAuthorize("hasRole('ADMIN')")

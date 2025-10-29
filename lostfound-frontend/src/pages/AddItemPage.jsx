@@ -81,7 +81,7 @@ function AddItemPage() {
       });
 
       alert("Item added successfully!");
-      navigate("/dashboard");
+      navigate("/lost-items");
     } catch (err) {
       console.error("Failed to add item:", err);
       alert("Failed to add item. Please try again.");

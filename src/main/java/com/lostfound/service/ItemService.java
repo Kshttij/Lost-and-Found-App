@@ -14,7 +14,7 @@ public class ItemService {
     @Autowired
     private ItemRepository itemRepository;
 
-    // ✅ Save new item (no image upload logic now)
+    // ✅ Save new item 
     public Item saveItem(Item item) {
         return itemRepository.save(item);
     }
@@ -30,8 +30,8 @@ public class ItemService {
     }
 
     // ✅ Get item by ID
-    public Optional<Item> getItemById(Long id) {
-        return itemRepository.findById(id);
+    public Item getItemById(Long id) {
+        return itemRepository.findById(id).orElse(null);
     }
 
     // ✅ Delete item
@@ -67,7 +67,7 @@ public class ItemService {
     Item item = optionalItem.get();
 
     // ensure only the owner or admin can mark it resolved
-    if (!item.getCreatedBy().getId().equals(userId)) {
+    if (item.getCreatedBy().getId() != userId) {
         throw new RuntimeException("Unauthorized: You can only resolve your own items");
     }
 
