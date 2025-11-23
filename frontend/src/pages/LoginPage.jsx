@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+// Change import to use your config
+import axiosInstance from "../axiosConfig"; 
 import { Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 
 function LoginPage({ onLogin }) {
@@ -27,7 +28,8 @@ function LoginPage({ onLogin }) {
     setMessage("");
 
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/login", { email, password });
+      // Use axiosInstance and relative path
+      const res = await axiosInstance.post("/auth/login", { email, password });
       const { token, role, id, email: responseEmail } = res.data;
       
       localStorage.setItem("token", token);
@@ -48,8 +50,7 @@ function LoginPage({ onLogin }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 to-slate-900 px-4">
       <div className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl flex flex-col md:flex-row h-auto md:h-[600px]">
-        
-        {/* Left Side - Brand */}
+        {/* Left Side */}
         <div className="hidden md:flex flex-col justify-center items-center w-1/2 bg-indigo-600 p-12 text-white text-center relative overflow-hidden">
            <div className="absolute inset-0 bg-indigo-600">
              <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -translate-x-10 -translate-y-10"></div>
@@ -63,7 +64,7 @@ function LoginPage({ onLogin }) {
            </div>
         </div>
 
-        {/* Right Side - Form */}
+        {/* Right Side */}
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <div className="mb-8 text-center md:text-left">
             <h1 className="text-3xl font-bold text-gray-900">Login</h1>

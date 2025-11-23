@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../axiosConfig"; // Updated import
 import { Search, Filter, Loader2 } from "lucide-react";
 import ItemCard from "../components/ItemCard";
 
@@ -18,23 +18,21 @@ function FoundItemsPage() {
   }, [navigate]);
 
   const fetchItems = async (status = "") => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     try {
       const params = { type: "FOUND" };
       if (status) params.status = status.toUpperCase();
-      const res = await axios.get("http://localhost:8080/api/items", {
-        headers: { Authorization: `Bearer ${token}` },
+      
+      // Updated to use axiosInstance
+      const res = await axiosInstance.get("/items", {
         params,
       });
       setItems(res.data);
     } catch (err) {
       console.error("Failed to fetch found items:", err);
-      localStorage.removeItem("token");
-      navigate("/login");
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
     } finally {
       setLoading(false);
     }
@@ -42,15 +40,11 @@ function FoundItemsPage() {
 
   useEffect(() => { fetchItems(filterStatus); }, [filterStatus]);
 
-  // --- NEW: Handle Delete ---
   const handleDelete = async (id) => {
-    const token = localStorage.getItem("token");
     if (!window.confirm("Are you sure you want to delete this item?")) return;
-
     try {
-      await axios.delete(`http://localhost:8080/api/items/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Updated to use axiosInstance
+      await axiosInstance.delete(`/items/${id}`);
       setItems((prev) => prev.filter((item) => item.id !== id));
       alert("Item deleted successfully.");
     } catch (err) {
@@ -59,19 +53,14 @@ function FoundItemsPage() {
     }
   };
 
-  // --- NEW: Handle Resolve ---
   const handleResolve = async (id) => {
-    const token = localStorage.getItem("token");
     const itemToUpdate = items.find((i) => i.id === id);
     if (!itemToUpdate) return;
-
     if (!window.confirm("Mark this item as RESOLVED?")) return;
-
     try {
       const updatedItem = { ...itemToUpdate, status: "RESOLVED" };
-      await axios.put(`http://localhost:8080/api/items/${id}`, updatedItem, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Updated to use axiosInstance
+      await axiosInstance.put(`/items/${id}`, updatedItem);
       setItems((prev) => prev.map((item) => (item.id === id ? updatedItem : item)));
       alert("Item marked as resolved!");
     } catch (err) {
@@ -139,8 +128,8 @@ function FoundItemsPage() {
                 key={item.id} 
                 item={item} 
                 onClaim={handleClaim}
-                onDelete={handleDelete}  // Passed here
-                onResolve={handleResolve} // Passed here
+                onDelete={handleDelete} 
+                onResolve={handleResolve}
               />
             ))}
           </div>

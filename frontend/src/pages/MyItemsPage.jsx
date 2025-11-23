@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axiosConfig"; // Updated import
 import { Trash2, Edit2, Save, X, Loader2 } from "lucide-react";
 
 function MyItemsPage() {
@@ -11,17 +11,16 @@ function MyItemsPage() {
 
   useEffect(() => {
     const fetchMyItems = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) { navigate("/login"); return; }
       try {
-        const res = await axios.get("http://localhost:8080/api/items/my-items", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Updated to use axiosInstance
+        const res = await axiosInstance.get("/items/my-items");
         setItems(res.data);
       } catch (err) {
         console.error("Failed to fetch user items:", err);
-        localStorage.removeItem("token");
-        navigate("/login");
+        if (err.response && err.response.status === 401) {
+            localStorage.removeItem("token");
+            navigate("/login");
+        }
       } finally {
         setLoading(false);
       }
@@ -30,26 +29,22 @@ function MyItemsPage() {
   }, [navigate]);
 
   const handleDelete = async (id) => {
-    const token = localStorage.getItem("token");
-    if (!token || !window.confirm("Are you sure you want to delete this item?")) return;
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      await axios.delete(`http://localhost:8080/api/items/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Updated to use axiosInstance
+      await axiosInstance.delete(`/items/${id}`);
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) { alert("Error deleting item"); }
   };
 
   const handleUpdate = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
     try {
-      const res = await axios.put(`http://localhost:8080/api/items/${editingItem.id}`, editingItem, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Updated to use axiosInstance
+      const res = await axiosInstance.put(`/items/${editingItem.id}`, editingItem);
       const updated = res.data;
       setItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
       setEditingItem(null);
+      alert("✅ Item updated successfully!");
     } catch (err) { alert("Error updating item"); }
   };
 

@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../axiosConfig"; // Updated import
 import { Trash2, Shield, User, Search } from "lucide-react";
 
-const API_URL = "http://localhost:8080";
+// Removed hardcoded API_URL constant
 
 function AdminUserManagementPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const getToken = () => localStorage.getItem("token");
-
   const fetchUsers = async () => {
     setLoading(true);
     setError("");
     try {
-      const token = getToken();
-      if (!token) throw new Error("No authorization token found.");
-      const response = await axios.get(`${API_URL}/api/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Updated to use axiosInstance
+      const response = await axiosInstance.get("/users");
       setUsers(response.data);
     } catch (err) {
       console.error("Failed to fetch users:", err);
@@ -34,10 +29,8 @@ function AdminUserManagementPage() {
   const handlePromote = async (userId) => {
     if (!window.confirm("Are you sure you want to make this user an admin?")) return;
     try {
-      const token = getToken();
-      await axios.post(`${API_URL}/api/users/${userId}/make-admin`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Updated to use axiosInstance
+      await axiosInstance.post(`/users/${userId}/make-admin`);
       alert("User promoted to admin!");
       fetchUsers(); 
     } catch (err) {
@@ -48,10 +41,8 @@ function AdminUserManagementPage() {
   const handleDelete = async (userId) => {
     if (!window.confirm("Delete this user? Action cannot be undone.")) return;
     try {
-      const token = getToken();
-      await axios.delete(`${API_URL}/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Updated to use axiosInstance
+      await axiosInstance.delete(`/users/${userId}`);
       alert("User deleted successfully.");
       fetchUsers();
     } catch (err) {

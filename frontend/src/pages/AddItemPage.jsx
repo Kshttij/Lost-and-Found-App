@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../axiosConfig"; // Updated import
 import { UploadCloud, Save, Loader2 } from "lucide-react";
 
 function AddItemPage() {
@@ -25,13 +25,12 @@ function AddItemPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!category) return alert("Please select a category.");
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
-
+    
     setLoading(true);
     try {
       let imageUrl = "";
       if (imageFile) {
+        // KEEP THIS AS FETCH - It goes to Cloudinary, NOT your backend
         const cloudData = new FormData();
         cloudData.append("file", imageFile);
         cloudData.append("upload_preset", "frontend_upload");
@@ -41,9 +40,8 @@ function AddItemPage() {
         imageUrl = cloudResData.secure_url;
       }
 
-      await axios.post("http://localhost:8080/api/items", { ...formData, imageUrl: imageUrl || "", category }, {
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      });
+      // Updated to use axiosInstance
+      await axiosInstance.post("/items", { ...formData, imageUrl: imageUrl || "", category });
 
       alert("Item added successfully!");
       navigate(formData.type === "LOST" ? "/lost-items" : "/found-items");
@@ -67,16 +65,19 @@ function AddItemPage() {
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             {/* Title */}
              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                 <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. Blue Wallet" />
              </div>
 
+             {/* Description */}
              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea name="description" rows="3" value={formData.description} onChange={handleChange} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Provide details like color, brand, unique marks..." />
              </div>
 
+             {/* Type */}
              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                 <select name="type" value={formData.type} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
@@ -85,6 +86,7 @@ function AddItemPage() {
                 </select>
              </div>
 
+             {/* Category */}
              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
@@ -97,21 +99,25 @@ function AddItemPage() {
                 </select>
              </div>
 
+             {/* Location */}
              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input type="text" name="location" value={formData.location} onChange={handleChange} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. Library 2nd Floor" />
              </div>
 
+             {/* Date */}
              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date & Time</label>
                 <input type="datetime-local" name="dateOccurred" value={formData.dateOccurred} onChange={handleChange} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
              </div>
 
+             {/* Contact */}
              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Contact Info</label>
                 <input type="text" name="contactInfo" value={formData.contactInfo} onChange={handleChange} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Email or Phone Number" />
              </div>
 
+             {/* Image Upload */}
              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image (Optional)</label>
                 <div className="flex items-center justify-center w-full">
