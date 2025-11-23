@@ -8,7 +8,6 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 build-number.properties
-.mvn/
 *.class
 *.log
 .project
