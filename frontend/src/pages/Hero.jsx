@@ -5,7 +5,7 @@ import { Search, ArrowRight } from 'lucide-react';
 function Hero() {
   return (
     <section className="relative h-screen bg-gradient-to-br from-gray-50 to-gray-200 overflow-hidden text-gray-800">
-      {/* Decorative Circles */}
+      
       <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
 
@@ -38,7 +38,7 @@ function Hero() {
           </div>
         </div>
 
-        {/* Hero Illustration Placeholder - You can add an SVG here later */}
+        
         <div className="hidden lg:flex items-center justify-center p-6 mt-8 lg:mt-0 h-72 sm:h-80 lg:h-96 xl:h-112 2xl:h-128">
            <div className="relative w-full h-full bg-white/40 backdrop-blur-xl border border-white/50 rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center animate-float">
               <Search size={80} className="text-indigo-500 mb-4" />
@@ -48,7 +48,7 @@ function Hero() {
       </div>
 
       <div className="absolute bottom-6 w-full text-center text-gray-400 text-sm">
-        Made with ❤️ by Kshitij
+        Made by Kshitij
       </div>
       
       <style>{`

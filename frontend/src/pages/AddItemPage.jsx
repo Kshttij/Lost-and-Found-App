@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig"; // Updated import
+import axiosInstance from "../axiosConfig"; 
 import { UploadCloud, Save, Loader2 } from "lucide-react";
 
 function AddItemPage() {
@@ -30,7 +30,7 @@ function AddItemPage() {
     try {
       let imageUrl = "";
       if (imageFile) {
-        // KEEP THIS AS FETCH - It goes to Cloudinary, NOT your backend
+        // It goes to Cloudinary, NOT backend
         const cloudData = new FormData();
         cloudData.append("file", imageFile);
         cloudData.append("upload_preset", "frontend_upload");

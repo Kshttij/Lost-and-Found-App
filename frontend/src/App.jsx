@@ -14,7 +14,7 @@ import RegisterPage from "./pages/RegisterPage";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
-// You will need to create this page for the admin dashboard:
+// admin dashboard
 import AdminUserManagementPage from "./pages/AdminUserManagementPage.jsx"; 
 
 
@@ -24,14 +24,13 @@ function App() {
 
   useEffect(() => {
     const onStorage = () => setToken(localStorage.getItem("token"));
-    // Listen for changes to local storage (like login/logout)
+    // Listen for changes to local storage
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   return (
     <Router>
-      {/* Navbar will re-render on login/logout because 'token' state changes */}
       {token && <Navbar setToken={setToken} />}
 
       <Routes>
@@ -50,7 +49,7 @@ function App() {
           element={token ? <Navigate to="/lost-items" replace /> : <RegisterPage />} 
         />
 
-        {/* --- ✅ Protected Routes (All Logged-in Users) --- */}
+        {/* ---  Protected Routes (All Logged-in Users) --- */}
         {/* The <ProtectedRoute> wrapper checks for a token. */}
         <Route element={<ProtectedRoute />}>
           <Route path="/lost-items" element={<LostItemsPage />} />
@@ -58,7 +57,7 @@ function App() {
           <Route path="/add-item" element={<AddItemPage />} />
           <Route path="/my-items" element={<MyItemsPage />} />
 
-          {/* --- ✅ Admin-Only Routes (Nested Inside) --- */}
+          {/* ---  Admin-Only Routes (Nested Inside) --- */}
           {/* The <AdminRoute> wrapper checks for "ADMIN" role. */}
           <Route element={<AdminRoute />}>
             <Route path="/admin/users" element={<AdminUserManagementPage />} />

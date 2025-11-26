@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig"; // Updated import
+import axiosInstance from "../axiosConfig"; 
 import { Search, Filter, Loader2 } from "lucide-react";
 import ItemCard from "../components/ItemCard";
 
@@ -18,7 +18,7 @@ function LostItemsPage() {
   }, [navigate]);
 
   const fetchItems = async (status = "") => {
-    // Note: We don't need to manually pass headers anymore, axiosInstance does it!
+ 
     const token = localStorage.getItem("token");
     if (!token) {
       setLoading(false);
@@ -28,14 +28,13 @@ function LostItemsPage() {
       const params = { type: "LOST" };
       if (status) params.status = status.toUpperCase();
       
-      // Updated to use axiosInstance and relative path
+      
       const res = await axiosInstance.get("/items", {
         params,
       });
       setItems(res.data);
     } catch (err) {
       console.error("Failed to fetch lost items:", err);
-      // Optional: You might want to remove token on 401 error only
       if (err.response && err.response.status === 401) {
          localStorage.removeItem("token");
          navigate("/login");
@@ -51,7 +50,7 @@ function LostItemsPage() {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      // Updated to use axiosInstance
+      
       await axiosInstance.delete(`/items/${id}`);
       setItems((prev) => prev.filter((item) => item.id !== id));
       alert("Item deleted successfully.");
@@ -68,7 +67,7 @@ function LostItemsPage() {
 
     try {
       const updatedItem = { ...itemToUpdate, status: "RESOLVED" };
-      // Updated to use axiosInstance
+   
       await axiosInstance.put(`/items/${id}`, updatedItem);
       setItems((prev) => prev.map((item) => (item.id === id ? updatedItem : item)));
       alert("Item marked as resolved!");
@@ -95,7 +94,7 @@ function LostItemsPage() {
            <p className="mt-2 text-lg text-gray-500">Browse items reported lost around campus</p>
         </div>
 
-        {/* Controls Toolbar */}
+        
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="relative w-full md:w-96">
              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -132,7 +131,7 @@ function LostItemsPage() {
           </div>
         </div>
 
-        {/* Content */}
+        
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 size={40} className="animate-spin text-indigo-600" />

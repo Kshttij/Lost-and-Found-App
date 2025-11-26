@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axiosInstance from "../axiosConfig"; // Updated Import
+import axiosInstance from "../axiosConfig"; 
 import { User, Mail, Lock, CheckCircle, AlertTriangle } from "lucide-react";
 
 function RegisterPage() {
@@ -19,7 +19,7 @@ function RegisterPage() {
     setLoading(true);
 
     try {
-      // Use axiosInstance and relative path
+      
       await axiosInstance.post("/auth/register", {
         name: formData.username,
         email: formData.email,

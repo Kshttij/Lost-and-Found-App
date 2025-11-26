@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
   },
 });
 
-// --- INTERCEPTOR ---
+
 // Automatically adds the token to every request if it exists
 axiosInstance.interceptors.request.use(
   (config) => {

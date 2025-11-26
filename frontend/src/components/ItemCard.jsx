@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Calendar, User, Tag, Trash2, CheckCircle, Mail, ImageOff } from 'lucide-react';
 
 const ItemCard = ({ item, onDelete, onResolve, onClaim }) => {
-  // State to track if the image failed to load
+  
   const [imageError, setImageError] = useState(false);
 
   if (!item) return null;
@@ -24,17 +24,17 @@ const ItemCard = ({ item, onDelete, onResolve, onClaim }) => {
   return (
     <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden">
       
-      {/* Image Section */}
+      
       <div className="relative h-52 w-full bg-gray-100 overflow-hidden flex items-center justify-center">
         {!imageError && item.imageUrl ? (
           <img
             src={item.imageUrl}
             alt={item.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            onError={() => setImageError(true)} // Set error state instead of replacing src
+            onError={() => setImageError(true)} 
           />
         ) : (
-          /* Fallback UI when image is missing or broken */
+          
           <div className="flex flex-col items-center justify-center text-gray-400">
             <ImageOff size={40} className="mb-2 opacity-50" />
             <span className="text-xs font-medium uppercase tracking-wider">No Image</span>

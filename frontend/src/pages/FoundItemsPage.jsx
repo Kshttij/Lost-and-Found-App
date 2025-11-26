@@ -59,7 +59,7 @@ function FoundItemsPage() {
     if (!window.confirm("Mark this item as RESOLVED?")) return;
     try {
       const updatedItem = { ...itemToUpdate, status: "RESOLVED" };
-      // Updated to use axiosInstance
+      
       await axiosInstance.put(`/items/${id}`, updatedItem);
       setItems((prev) => prev.map((item) => (item.id === id ? updatedItem : item)));
       alert("Item marked as resolved!");

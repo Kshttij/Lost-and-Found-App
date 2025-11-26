@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// Change import to use your config
 import axiosInstance from "../axiosConfig"; 
 import { Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 
@@ -28,7 +27,7 @@ function LoginPage({ onLogin }) {
     setMessage("");
 
     try {
-      // Use axiosInstance and relative path
+    
       const res = await axiosInstance.post("/auth/login", { email, password });
       const { token, role, id, email: responseEmail } = res.data;
       

@@ -59,23 +59,7 @@ public class ItemService {
         return itemRepository.findByTypeAndStatus(type, status);
     }
 
-    public Item markItemAsResolved(Long itemId, Long userId) {
-    Optional<Item> optionalItem = itemRepository.findById(itemId);
-    if (!optionalItem.isPresent()) {
-        throw new RuntimeException("Item not found");
-    }
-
-    Item item = optionalItem.get();
-
-    // ensure only the owner or admin can mark it resolved
-    if (item.getCreatedBy().getId() != userId) {
-        throw new RuntimeException("Unauthorized: You can only resolve your own items");
-    }
-
-    item.setStatus("Resolved");
-    return itemRepository.save(item);
-}
-
+   
 public List<Item> getItemsByCategory(String category) {
     return itemRepository.findByCategory(category);
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig"; // Updated import
+import axiosInstance from "../axiosConfig"; 
 import { Trash2, Edit2, Save, X, Loader2 } from "lucide-react";
 
 function MyItemsPage() {
@@ -12,7 +12,7 @@ function MyItemsPage() {
   useEffect(() => {
     const fetchMyItems = async () => {
       try {
-        // Updated to use axiosInstance
+       
         const res = await axiosInstance.get("/items/my-items");
         setItems(res.data);
       } catch (err) {

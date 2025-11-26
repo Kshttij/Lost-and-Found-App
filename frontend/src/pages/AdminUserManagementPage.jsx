@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../axiosConfig"; // Updated import
+import axiosInstance from "../axiosConfig"; 
 import { Trash2, Shield, User, Search } from "lucide-react";
 
-// Removed hardcoded API_URL constant
+
 
 function AdminUserManagementPage() {
   const [users, setUsers] = useState([]);
@@ -13,7 +13,7 @@ function AdminUserManagementPage() {
     setLoading(true);
     setError("");
     try {
-      // Updated to use axiosInstance
+      
       const response = await axiosInstance.get("/users");
       setUsers(response.data);
     } catch (err) {
@@ -29,7 +29,7 @@ function AdminUserManagementPage() {
   const handlePromote = async (userId) => {
     if (!window.confirm("Are you sure you want to make this user an admin?")) return;
     try {
-      // Updated to use axiosInstance
+     
       await axiosInstance.post(`/users/${userId}/make-admin`);
       alert("User promoted to admin!");
       fetchUsers(); 
@@ -41,7 +41,7 @@ function AdminUserManagementPage() {
   const handleDelete = async (userId) => {
     if (!window.confirm("Delete this user? Action cannot be undone.")) return;
     try {
-      // Updated to use axiosInstance
+     
       await axiosInstance.delete(`/users/${userId}`);
       alert("User deleted successfully.");
       fetchUsers();
