@@ -44,7 +44,7 @@ function MyItemsPage() {
       const updated = res.data;
       setItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
       setEditingItem(null);
-      alert("✅ Item updated successfully!");
+      alert(" Item updated successfully!");
     } catch (err) { alert("Error updating item"); }
   };
 

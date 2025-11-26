@@ -1,4 +1,4 @@
-# 1. Use an official Java 21 image (This solves the JAVA_HOME error)
+# 1. Use an official Java 21 image
 FROM eclipse-temurin:21-jdk-jammy
 
 # 2. Set working directory
