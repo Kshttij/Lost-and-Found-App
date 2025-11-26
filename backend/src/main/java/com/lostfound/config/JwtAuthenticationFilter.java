@@ -1,7 +1,6 @@
 package com.lostfound.config;
 
 import com.lostfound.model.User;
-import com.lostfound.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,17 +15,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserService userService;
-
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService) {
+    
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userService = userService;
     }
 
     @Override
@@ -35,40 +31,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        
-
         String token = null;
-        String email = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
+            
             try {
-                email = jwtUtil.extractEmail(token);
+                if (jwtUtil.validateToken(token)) {
+                
+                    // We extract all data from the tokem
+                    
+                    String email = jwtUtil.extractEmail(token);
+                    Long userId = jwtUtil.extractUserId(token);
+                    Boolean isAdmin = jwtUtil.extractIsAdmin(token);
+                    String name = jwtUtil.extractName(token);
+
+                    // Reconstruct User object in Memory
+                  
+                    User user = new User();
+                    user.setId(userId);
+                    user.setEmail(email);
+                    user.setName(name);
+                    user.setAdmin(isAdmin != null && isAdmin);
+                    // Password is left null (we don't need it, we already verified the token)
+
+                    // 2. Set Authorities
+                    String role = user.isAdmin() ? "ADMIN" : "USER";
+                    List<SimpleGrantedAuthority> authorities = List.of(
+                            new SimpleGrantedAuthority("ROLE_" + role)
+                    );
+
+                    // 3. Set Context
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(user, null, authorities);
+
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             } catch (Exception e) {
-                System.out.println("Invalid JWT token: " + e.getMessage());
-            }
-        }
-
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Optional<User> userOptional = userService.getUserByEmail(email);
-
-            if (userOptional.isPresent() && jwtUtil.validateToken(token)) {
-                User user = userOptional.get();
-
-                
-                // We now check the boolean 'isAdmin' and assign a role based on it.
-                // This makes ROLE_ADMIN or ROLE_USER available to Spring Security.
-                String role = user.isAdmin() ? "ADMIN" : "USER";
-                List<SimpleGrantedAuthority> authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + role)
-                );
-                
-
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(user, null, authorities);
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Token is invalid/expired 
+                System.out.println("JWT Token validation failed: " + e.getMessage());
             }
         }
 

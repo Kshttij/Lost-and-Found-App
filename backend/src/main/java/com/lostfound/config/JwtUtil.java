@@ -1,5 +1,6 @@
 package com.lostfound.config;
 
+import com.lostfound.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -16,38 +20,71 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    // Token validity: 24 hours 
-    private final long JWT_EXPIRATION = 24 * 60 * 60 * 1000;
+    private final long JWT_EXPIRATION = 24 * 60 * 60 * 1000; // 24 hours
 
-    // FIX: Create the key only when needed, not at startup
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // Generate token for a given email
-    public String generateToken(String email) {
+    //generate token
+    // Now accepts the whole User object to pack ID and Role
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("isAdmin", user.isAdmin());
+        claims.put("name", user.getName());
+
         return Jwts.builder()
-                .setSubject(email)
+                .setClaims(claims)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // Use the new method here
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Extract email (subject) from token
+    
     public String extractEmail(String token) {
-        return getClaims(token).getSubject();
+        return extractClaim(token, Claims::getSubject);
     }
 
-    // Validate token: check expiration
+    public Long extractUserId(String token) {
+        final Claims claims = extractAllClaims(token);
+        // JSON numbers are often integers, handle conversion safely
+        return ((Number) claims.get("userId")).longValue();
+    }
+
+    public Boolean extractIsAdmin(String token) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get("isAdmin", Boolean.class);
+    }
+    
+    public String extractName(String token) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get("name", String.class);
+    }
+
+    
     public boolean validateToken(String token) {
-        return !getClaims(token).getExpiration().before(new Date());
+        return !isTokenExpired(token);
     }
 
-    // Helper: parse claims
-    private Claims getClaims(String token) {
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey()) // Use the new method here
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

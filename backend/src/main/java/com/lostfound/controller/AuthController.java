@@ -15,7 +15,6 @@ public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
-   
 
     public AuthController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
@@ -25,17 +24,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
-            // authentication done by service
+            // 1. Authenticate (Checks DB for password match)
             User user = userService.authenticate(
                 loginRequest.getEmail(), 
                 loginRequest.getPassword()
             );
 
-            // Create JWT
-            String token = jwtUtil.generateToken(user.getEmail());
+            // 2. Generate Token (NOW PASSING THE FULL USER)
+            // This packs the ID, Role, and Name into the token string
+            String token = jwtUtil.generateToken(user);
+            
             String role = user.isAdmin() ? "ADMIN" : "USER";
 
-            // Create Response DTO
+            // 3. Return Response
             LoginResponseDTO response = new LoginResponseDTO(
                 token, 
                 user.getEmail(), 
@@ -46,7 +47,6 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
-            // authentication failure
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
@@ -54,14 +54,11 @@ public class AuthController {
    @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDTO registerRequest) {
         try {
-            
             User newUser = new User();
             newUser.setName(registerRequest.getName());
             newUser.setEmail(registerRequest.getEmail());
             newUser.setPassword(registerRequest.getPassword()); 
             
-            
-            // The service will handle all logic like checking if it exists, giving admin control etc
             userService.registerUser(newUser);
 
             return ResponseEntity.ok("User registered successfully");
