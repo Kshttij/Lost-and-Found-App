@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axiosConfig"; 
 import { Search, Filter, Loader2 } from "lucide-react";
@@ -17,40 +17,38 @@ function LostItemsPage() {
     if (!token) navigate("/login");
   }, [navigate]);
 
-  const fetchItems = async (status = "") => {
- 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+  // --- REFACTORED FETCH FUNCTION (Server-Side Logic) ---
+  const fetchItems = useCallback(async () => {
+    setLoading(true);
     try {
       const params = { type: "LOST" };
-      if (status) params.status = status.toUpperCase();
       
-      
-      const res = await axiosInstance.get("/items", {
-        params,
-      });
+      // 1. Add filters to params if they exist (Server-Side Filtering)
+      if (filterStatus) params.status = filterStatus.toUpperCase();
+      if (filterCategory) params.category = filterCategory; 
+
+      const res = await axiosInstance.get("/items", { params });
       setItems(res.data);
     } catch (err) {
       console.error("Failed to fetch lost items:", err);
       if (err.response && err.response.status === 401) {
-         localStorage.removeItem("token");
-         navigate("/login");
+        localStorage.removeItem("token");
+        navigate("/login");
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, filterCategory, navigate]);
 
-  useEffect(() => { fetchItems(filterStatus); }, [filterStatus]);
+  // 2. Trigger fetch whenever filters change
+  useEffect(() => { 
+    fetchItems(); 
+  }, [fetchItems]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      
       await axiosInstance.delete(`/items/${id}`);
       setItems((prev) => prev.filter((item) => item.id !== id));
       alert("Item deleted successfully.");
@@ -67,7 +65,6 @@ function LostItemsPage() {
 
     try {
       const updatedItem = { ...itemToUpdate, status: "RESOLVED" };
-   
       await axiosInstance.put(`/items/${id}`, updatedItem);
       setItems((prev) => prev.map((item) => (item.id === id ? updatedItem : item)));
       alert("Item marked as resolved!");
@@ -81,9 +78,10 @@ function LostItemsPage() {
     window.location.href = `mailto:${item.contactInfo}?subject=Regarding your lost item: ${item.title}`;
   };
 
+  // 3. Client-Side Search Only (Category logic removed from here)
   const filteredItems = items.filter((item) =>
-    (item.title.toLowerCase().includes(search.toLowerCase()) || item.description.toLowerCase().includes(search.toLowerCase())) &&
-    (filterCategory ? item.category === filterCategory : true)
+    item.title.toLowerCase().includes(search.toLowerCase()) || 
+    item.description.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -94,7 +92,7 @@ function LostItemsPage() {
            <p className="mt-2 text-lg text-gray-500">Browse items reported lost around campus</p>
         </div>
 
-        
+        {/* Toolbar */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="relative w-full md:w-96">
              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -131,7 +129,7 @@ function LostItemsPage() {
           </div>
         </div>
 
-        
+        {/* Content */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 size={40} className="animate-spin text-indigo-600" />

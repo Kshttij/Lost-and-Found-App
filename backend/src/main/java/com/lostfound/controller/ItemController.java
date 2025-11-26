@@ -1,8 +1,8 @@
 package com.lostfound.controller;
 
-import com.lostfound.dto.ItemRequestDTO; // New import
-import com.lostfound.dto.ItemResponseDTO; // New import
-import com.lostfound.mapper.ItemMapper; // New import
+import com.lostfound.dto.ItemRequestDTO;
+import com.lostfound.dto.ItemResponseDTO; 
+import com.lostfound.mapper.ItemMapper; 
 import com.lostfound.model.Item;
 import com.lostfound.model.User;
 import com.lostfound.service.ItemService;
@@ -27,32 +27,42 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    // get all items, based on lost or found, status and category
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @GetMapping
-    public List<ItemResponseDTO> getAllItems(
-            @RequestParam(required = false) String type,
-            @RequestParam(required = false) String status
-    ) {
-        List<Item> items; // Get the entities from the service
-        if (type != null && status != null) {
-            items = itemService.getItemsByTypeAndStatus(type.toUpperCase(), status.toUpperCase());
-        } else if (type != null) {
-            items = itemService.getItemsByType(type.toUpperCase());
-        } else if (status != null) {
-            items = itemService.getItemsByStatus(status.toUpperCase());
-        } else {
-            items = itemService.getAllItems();
-        }
-        
-        List<ItemResponseDTO> dtoList = new ArrayList<>();
-
-        for(Item item : items){
-            ItemResponseDTO dto = ItemMapper.toItemResponseDTO(item);
-            dtoList.add(dto);
-        }
-        return dtoList;
+@GetMapping
+public List<ItemResponseDTO> getAllItems(
+        @RequestParam(required = false) String type,
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) String category
+) {
+   
+    String typeParam = null;
+    if (type != null) {
+        typeParam = type.toUpperCase(); 
     }
 
+    
+    String statusParam = null;
+    if (status != null) {
+        statusParam = status.toUpperCase(); 
+    }
+
+    String categoryParam = null;
+    if (category != null) {
+        categoryParam = category; 
+    }
+
+    List<Item> items = itemService.getItems(typeParam, statusParam, categoryParam);
+
+    List<ItemResponseDTO> dtoList = new ArrayList<>();
+    for(Item item : items){
+        dtoList.add(ItemMapper.toItemResponseDTO(item));
+    }
+    
+    return dtoList;
+}
+
+// get items by user
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable Long id) {
@@ -64,7 +74,7 @@ public class ItemController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
+// post an item 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
     public ResponseEntity<ItemResponseDTO> addItem(@RequestBody ItemRequestDTO itemRequest,
@@ -83,15 +93,13 @@ public class ItemController {
         newItem.setImageUrl(itemRequest.getImageUrl());
         newItem.setCategory(itemRequest.getCategory());
         
-        // Set server-controlled fields
         newItem.setCreatedBy(loggedInUser);
-        // Note: 'createdAt' is already handled in your Item entity constructor/default
-
-        Item savedItem = itemService.saveItem(newItem);
         
-        // Map saved entity to response DTO
+        Item savedItem = itemService.saveItem(newItem);
         return ResponseEntity.ok(ItemMapper.toItemResponseDTO(savedItem));
     }
+
+    //update item 
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/{id}")
@@ -108,7 +116,7 @@ public class ItemController {
             return ResponseEntity.status(403).build();
         }
 
-        // --- Map DTO to Entity for update ---
+        // Map DTO to Entity for update
         existingItem.setTitle(itemRequest.getTitle());
         existingItem.setDescription(itemRequest.getDescription());
         existingItem.setLocation(itemRequest.getLocation());
@@ -123,6 +131,8 @@ public class ItemController {
         Item savedItem = itemService.updateItem(existingItem);
         return ResponseEntity.ok(ItemMapper.toItemResponseDTO(savedItem));
     }
+
+    //delete
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping("/{id}")
@@ -156,7 +166,7 @@ public class ItemController {
                 
         return ResponseEntity.ok(myItemsDTO);
     }
-
+  // resolve items 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/{id}/resolve")
     public ResponseEntity<ItemResponseDTO> markItemAsResolved(@PathVariable Long id, Authentication authentication) {

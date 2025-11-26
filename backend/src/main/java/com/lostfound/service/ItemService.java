@@ -25,10 +25,18 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
-    //  Get all items
-    public List<Item> getAllItems() {
-        return itemRepository.findAll();
+       // get all items
+    public List<Item> getItems(String type, String status, String category) {
+    if (status != null && category != null) {
+        return itemRepository.findByTypeAndStatusAndCategory(type, status, category);
+    } else if (status != null) {
+        return itemRepository.findByTypeAndStatus(type, status);
+    } else if (category != null) {
+        return itemRepository.findByTypeAndCategory(type, category);
+    } else {
+        return itemRepository.findByType(type);
     }
+}
 
     //  Get item by ID
     public Item getItemById(Long id) {
@@ -55,6 +63,7 @@ public class ItemService {
         return itemRepository.findByCreatedById(userId);
     }
 
+    // eg : LOST + OPEN 
     public List<Item> getItemsByTypeAndStatus(String type, String status) {
         return itemRepository.findByTypeAndStatus(type, status);
     }

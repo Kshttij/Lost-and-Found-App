@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig"; // Updated import
+import axiosInstance from "../axiosConfig"; 
 import { Search, Filter, Loader2 } from "lucide-react";
 import ItemCard from "../components/ItemCard";
 
@@ -17,15 +17,17 @@ function FoundItemsPage() {
     if (!token) navigate("/login");
   }, [navigate]);
 
-  const fetchItems = async (status = "") => {
+  // --- REFACTORED FETCH FUNCTION ---
+  const fetchItems = useCallback(async () => {
+    setLoading(true);
     try {
       const params = { type: "FOUND" };
-      if (status) params.status = status.toUpperCase();
       
-      // Updated to use axiosInstance
-      const res = await axiosInstance.get("/items", {
-        params,
-      });
+      // Add filters to params if they exist
+      if (filterStatus) params.status = filterStatus.toUpperCase();
+      if (filterCategory) params.category = filterCategory; // <--- NEW: Server-side filtering
+
+      const res = await axiosInstance.get("/items", { params });
       setItems(res.data);
     } catch (err) {
       console.error("Failed to fetch found items:", err);
@@ -36,14 +38,16 @@ function FoundItemsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, filterCategory, navigate]);
 
-  useEffect(() => { fetchItems(filterStatus); }, [filterStatus]);
+  // Trigger fetch whenever filters change
+  useEffect(() => { 
+    fetchItems(); 
+  }, [fetchItems]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      // Updated to use axiosInstance
       await axiosInstance.delete(`/items/${id}`);
       setItems((prev) => prev.filter((item) => item.id !== id));
       alert("Item deleted successfully.");
@@ -59,7 +63,6 @@ function FoundItemsPage() {
     if (!window.confirm("Mark this item as RESOLVED?")) return;
     try {
       const updatedItem = { ...itemToUpdate, status: "RESOLVED" };
-      
       await axiosInstance.put(`/items/${id}`, updatedItem);
       setItems((prev) => prev.map((item) => (item.id === id ? updatedItem : item)));
       alert("Item marked as resolved!");
@@ -73,9 +76,11 @@ function FoundItemsPage() {
     window.location.href = `mailto:${item.contactInfo}?subject=Claiming your found item: ${item.title}`;
   };
 
+  // --- CLIENT-SIDE SEARCH ONLY ---
+  // Category logic removed, backend handles it.
   const filteredItems = items.filter((item) =>
-    (item.title.toLowerCase().includes(search.toLowerCase()) || item.description.toLowerCase().includes(search.toLowerCase())) &&
-    (filterCategory ? item.category === filterCategory : true)
+    item.title.toLowerCase().includes(search.toLowerCase()) || 
+    item.description.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
