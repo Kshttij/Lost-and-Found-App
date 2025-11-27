@@ -49,7 +49,7 @@ function App() {
           element={token ? <Navigate to="/lost-items" replace /> : <RegisterPage />} 
         />
 
-        {/* ---  Protected Routes (All Logged-in Users) --- */}
+        {/* Protected Routes (all users) */}
         {/* The <ProtectedRoute> wrapper checks for a token. */}
         <Route element={<ProtectedRoute />}>
           <Route path="/lost-items" element={<LostItemsPage />} />
@@ -57,16 +57,16 @@ function App() {
           <Route path="/add-item" element={<AddItemPage />} />
           <Route path="/my-items" element={<MyItemsPage />} />
 
-          {/* ---  Admin-Only Routes (Nested Inside) --- */}
-          {/* The <AdminRoute> wrapper checks for "ADMIN" role. */}
+          {/* Admin-Only Route*/}
+          {/* The <AdminRoute> wrapper checks for ADMIN role. */}
           <Route element={<AdminRoute />}>
             <Route path="/admin/users" element={<AdminUserManagementPage />} />
             {/* You can add more admin-only routes here */}
           </Route>
-          {/* --- End Admin-Only Routes --- */}
+          {/*End Admin-Only Route*/}
 
         </Route>
-        {/* --- End Protected Routes --- */}
+        {/*End Protected Routes*/}
 
       </Routes>
     </Router>

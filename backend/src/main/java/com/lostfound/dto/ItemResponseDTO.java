@@ -15,10 +15,9 @@ public class ItemResponseDTO {
     private String imageUrl;
     private String category;
     
-    // We will embed the secure User DTO here
+    
     private UserResponseDTO createdBy; 
 
-    // Constructor to make mapping easier
     public ItemResponseDTO(Long id, String title, String description, String location, 
                            String type, LocalDateTime dateOccurred, String contactInfo, 
                            String status, LocalDateTime createdAt, String imageUrl, 

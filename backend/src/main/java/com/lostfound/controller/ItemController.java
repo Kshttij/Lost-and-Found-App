@@ -68,7 +68,7 @@ public List<ItemResponseDTO> getAllItems(
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable Long id) {
         Item item = itemService.getItemById(id);
         if (item != null) {
-            // Map entity to DTO
+            // map entity to DTO
             return new ResponseEntity<>(ItemMapper.toItemResponseDTO(item), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -81,7 +81,7 @@ public List<ItemResponseDTO> getAllItems(
                                                  Authentication authentication) {
         User loggedInUser = (User) authentication.getPrincipal();
 
-        // --- Map DTO to Entity ---
+        // Map DTO to entity
         Item newItem = new Item();
         newItem.setTitle(itemRequest.getTitle());
         newItem.setDescription(itemRequest.getDescription());
@@ -126,7 +126,7 @@ public List<ItemResponseDTO> getAllItems(
         existingItem.setStatus(itemRequest.getStatus());
         existingItem.setImageUrl(itemRequest.getImageUrl());
         existingItem.setCategory(itemRequest.getCategory());
-        // We don't change 'id' or 'createdBy'
+       
 
         Item savedItem = itemService.updateItem(existingItem);
         return ResponseEntity.ok(ItemMapper.toItemResponseDTO(savedItem));

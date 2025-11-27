@@ -9,7 +9,7 @@ public class ItemRequestDTO {
     private String type; // LOST or FOUND
     private LocalDateTime dateOccurred;
     private String contactInfo;
-    private String status; // OPEN, CLOSED, etc.
+    private String status; // OPEN, CLOSED
     private String imageUrl;
     private String category;
 

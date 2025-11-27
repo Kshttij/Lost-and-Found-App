@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
+            token = authHeader.split("Bearer ")[1];
             
             try {
                 if (jwtUtil.validateToken(token)) {
@@ -52,16 +52,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     user.setId(userId);
                     user.setEmail(email);
                     user.setName(name);
-                    user.setAdmin(isAdmin != null && isAdmin);
+                    user.setAdmin(isAdmin);
                     // Password is left null (we don't need it, we already verified the token)
 
-                    // 2. Set Authorities
+                    //  Set Authorities
                     String role = user.isAdmin() ? "ADMIN" : "USER";
                     List<SimpleGrantedAuthority> authorities = List.of(
                             new SimpleGrantedAuthority("ROLE_" + role)
                     );
 
-                    // 3. Set Context
+                    //  Set Context
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(user, null, authorities);
 

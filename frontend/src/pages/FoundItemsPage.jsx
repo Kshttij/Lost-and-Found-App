@@ -25,7 +25,7 @@ function FoundItemsPage() {
       
       // Add filters to params if they exist
       if (filterStatus) params.status = filterStatus.toUpperCase();
-      if (filterCategory) params.category = filterCategory; // <--- NEW: Server-side filtering
+      if (filterCategory) params.category = filterCategory; 
 
       const res = await axiosInstance.get("/items", { params });
       setItems(res.data);

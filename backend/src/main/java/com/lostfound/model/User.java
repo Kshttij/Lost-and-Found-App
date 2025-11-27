@@ -18,15 +18,15 @@ public class User {
     private String password;
 
    
-    // By default, this will be 'false' (a normal user)
+    // By default, this will be false
     private boolean isAdmin;
    
 
-    // Default constructor required by JPA
+   
     public User() {
     }
 
-    // --- UPDATED CONSTRUCTOR ---
+  
     public User(String name, String email, String password, boolean isAdmin) {
         this.name = name;
         this.email = email;
@@ -75,5 +75,5 @@ public class User {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
-    // --- END OF CHANGE ---
+    
 }

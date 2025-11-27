@@ -63,7 +63,7 @@ public class ItemService {
         return itemRepository.findByCreatedById(userId);
     }
 
-    // eg : LOST + OPEN 
+    // LOST + OPEN 
     public List<Item> getItemsByTypeAndStatus(String type, String status) {
         return itemRepository.findByTypeAndStatus(type, status);
     }

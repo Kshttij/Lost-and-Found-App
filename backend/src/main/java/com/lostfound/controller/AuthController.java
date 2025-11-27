@@ -24,14 +24,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
-            // 1. Authenticate (Checks DB for password match)
+            // 1. Authenticate 
             User user = userService.authenticate(
                 loginRequest.getEmail(), 
                 loginRequest.getPassword()
             );
 
-            // 2. Generate Token (NOW PASSING THE FULL USER)
-            // This packs the ID, Role, and Name into the token string
+            // 2. Generate Token 
+            // ID, Role, and name into the token string
             String token = jwtUtil.generateToken(user);
             
             String role = user.isAdmin() ? "ADMIN" : "USER";

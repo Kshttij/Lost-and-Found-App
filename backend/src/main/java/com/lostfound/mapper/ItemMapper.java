@@ -18,7 +18,7 @@ public class ItemMapper {
                 item.getCreatedAt(),
                 item.getImageUrl(),
                 item.getCategory(),
-                // Here we re-use the UserMapper to embed the creator's info securely
+                
                 UserMapper.toUserResponseDTO(item.getCreatedBy())
         );
     }

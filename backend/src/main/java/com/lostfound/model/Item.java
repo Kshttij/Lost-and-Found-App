@@ -11,7 +11,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ Basic details
+    
     private String title;
     private String description;
     private String location;
@@ -21,21 +21,20 @@ public class Item {
     private String status; // OPEN, CLOSED, etc.
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // ✅ Instead of storing the image as bytes, store only the URL
+
     @Column(nullable = false)
-    private String imageUrl; // e.g. https://res.cloudinary.com/.../image.jpg
+    private String imageUrl; 
 
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
 
-    private String category; // e.g., Electronics, Documents, Keys, Wallets
+    private String category; 
 
-    // ------------------------------------------------------
-    // ✅ Default constructor (required by JPA)
+  
     public Item() {}
 
-    // ✅ Parameterized constructor
+    
     public Item(String title, String description, String location, String type,
             LocalDateTime dateOccurred, String contactInfo, String status,
             String imageUrl, String category, User createdBy) {
@@ -52,8 +51,8 @@ public class Item {
     this.createdAt = LocalDateTime.now();
 }
 
-    // ------------------------------------------------------
-    // ✅ Getters and setters
+
+    //  Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

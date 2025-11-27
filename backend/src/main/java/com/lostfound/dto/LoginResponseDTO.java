@@ -1,6 +1,6 @@
 package com.lostfound.dto;
 
-// This class represents the successful login response
+
 public class LoginResponseDTO {
     private String token;
     private String email;
